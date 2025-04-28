@@ -1,39 +1,83 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <title>İstanbul 5 Günlük Hava Durumu</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background-color: #0d1b2a;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .weather-container {
-      width: 90%;
-      max-width: 800px;
-      height: 500px;
-      background: #ffffff;
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.4);
-    }
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>İstanbul Hava Durumu</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #0d1b2a;
+    color: #ffffff;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+  }
+  .weather-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .day {
+    background: #1b263b;
+    padding: 15px;
+    border-radius: 10px;
+    width: 120px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  }
+  .day h3 {
+    font-size: 16px;
+    margin: 0 0 10px;
+  }
+  .day img {
+    width: 50px;
+    height: 50px;
+  }
+  .day p {
+    margin: 5px 0;
+    font-size: 14px;
+  }
+</style>
 </head>
 <body>
-  <div class="weather-container">
-    <iframe src="https://oneweather.org/tr/istanbul/15_days/"></iframe>
-  </div>
+
+<h1>İstanbul 5 Günlük Hava Durumu</h1>
+
+<div class="weather-container" id="weather">
+  <!-- Hava durumu kartları buraya otomatik gelecek -->
+</div>
+
+<script>
+async function fetchWeather() {
+  const apiKey = '6e4e4a79ad114e15a3d4f5b8b7b05c7a'; // Demo API Key (kendi keyini alabiliriz)
+  const url = `https://api.openweathermap.org/data/2.5/forecast?q=Istanbul,tr&units=metric&lang=tr&cnt=5&appid=${apiKey}`;
+  
+  const response = await fetch(url);
+  const data = await response.json();
+  
+  const container = document.getElementById('weather');
+  container.innerHTML = '';
+  
+  data.list.forEach(item => {
+    const date = new Date(item.dt * 1000);
+    const options = { weekday: 'short' };
+    const dayName = date.toLocaleDateString('tr-TR', options);
+    
+    const html = `
+      <div class="day">
+        <h3>${dayName}</h3>
+        <img src="https://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png" alt="${item.weather[0].description}">
+        <p>${Math.round(item.main.temp)}°C</p>
+        <p>${item.weather[0].description}</p>
+      </div>
+    `;
+    container.innerHTML += html;
+  });
+}
+
+fetchWeather();
+</script>
+
 </body>
 </html>
-
-
